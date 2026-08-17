@@ -1,0 +1,313 @@
+:root {
+    --bg-main: #0a0a10;
+    --bg-panel: #12121c;
+    --bg-card: #181826;
+    --border-color: #242438;
+    --text-main: #f0f0f5;
+    --text-muted: #8c8ca6;
+    --neon-cyan: #00f3ff;
+    --neon-green: #00ff9d;
+    --neon-magenta: #ff0077;
+    --neon-orange: #ff9900;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 10;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-indicator.live {
+    width: 12px;
+    height: 12px;
+    background-color: var(--neon-green);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-green);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.brand-text h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--neon-cyan);
+}
+
+.sub-badge {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+}
+
+.header-metrics {
+    display: flex;
+    gap: 16px;
+}
+
+.metric-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 16px;
+    min-width: 140px;
+}
+
+.metric-card.primary {
+    border-color: rgba(0, 243, 255, 0.4);
+    background: linear-gradient(180deg, rgba(0, 243, 255, 0.08) 0%, rgba(24, 24, 38, 1) 100%);
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.metric-value-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.metric-val {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.metric-card.primary .metric-val {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+}
+
+.metric-unit {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Main Viewport */
+.main-viewport {
+    display: flex;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.viewport-3d {
+    flex: 1;
+    position: relative;
+    background-color: #06060a;
+}
+
+.overlay-controls {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hud-tag {
+    display: inline-block;
+    background-color: rgba(18, 18, 28, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+    margin-bottom: 8px;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+    background-color: rgba(18, 18, 28, 0.8);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    backdrop-filter: blur(4px);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dot.sensor { background-color: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); }
+.dot.obstacle { background-color: var(--neon-magenta); box-shadow: 0 0 6px var(--neon-magenta); }
+.dot.wall { background-color: var(--neon-orange); box-shadow: 0 0 6px var(--neon-orange); }
+
+/* Side Panel */
+.side-panel {
+    width: 400px;
+    background-color: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.panel-box {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.panel-header h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.badge {
+    background-color: rgba(0, 243, 255, 0.15);
+    color: var(--neon-cyan);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.badge-sub {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.canvas-wrap {
+    background-color: #0c0c14;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+#canvas-rir {
+    width: 100%;
+    height: 140px;
+    display: block;
+}
+
+.axis-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    font-family: 'Fira Code', monospace;
+    color: var(--text-muted);
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.echo-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.echo-log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #12121c;
+    border: 1px solid var(--border-color);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: 'Fira Code', monospace;
+}
+
+.echo-log-item.empty {
+    color: var(--text-muted);
+    justify-content: center;
+    font-style: italic;
+}
+
+.echo-dist {
+    font-weight: 700;
+    color: var(--neon-cyan);
+}
+
+.echo-amp {
+    color: var(--neon-orange);
+}
+
+.mini-guide {
+    background: linear-gradient(180deg, rgba(0, 255, 157, 0.05) 0%, rgba(24, 24, 38, 1) 100%);
+    border-color: rgba(0, 255, 157, 0.3);
+}
+
+.mini-guide h4 {
+    font-size: 0.8rem;
+    color: var(--neon-green);
+    margin-bottom: 6px;
+}
+
+.mini-guide p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}

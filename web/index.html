@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio-Sonar 3D | Ecolocalización Acústica en Tiempo Real</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Three.js y OrbitControls desde CDN confiable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header superior con métricas clave -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="status-indicator live"></div>
+                <div class="brand-text">
+                    <h1>BIO-SONAR 3D</h1>
+                    <span class="sub-badge">ECOLOCALIZACIÓN ACÚSTICA ACTIVA (8 - 18 kHz)</span>
+                </div>
+            </div>
+
+            <div class="header-metrics">
+                <div class="metric-card primary">
+                    <span class="metric-label">DISTANCIA ECO PRINCIPAL</span>
+                    <div class="metric-value-wrap">
+                        <span id="val-distance" class="metric-val">--.-</span>
+                        <span class="metric-unit">cm</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-label">VELOCIDAD DOPPLER</span>
+                    <div class="metric-value-wrap">
+                        <span id="val-velocity" class="metric-val">0.00</span>
+                        <span class="metric-unit">m/s</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-label">RELACIÓN SNR</span>
+                    <div class="metric-value-wrap">
+                        <span id="val-snr" class="metric-val">--.-</span>
+                        <span class="metric-unit">dB</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-label">TASA DE PULSO</span>
+                    <div class="metric-value-wrap">
+                        <span id="val-fps" class="metric-val">0</span>
+                        <span class="metric-unit">Hz</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Área principal de trabajo -->
+        <main class="main-viewport">
+            <!-- Canvas 3D de Three.js -->
+            <div id="canvas-3d-container" class="viewport-3d">
+                <div class="overlay-controls">
+                    <span class="hud-tag">🎯 VISTA 3D INTERACTIVA • ARRASTRA PARA ROTAR • RUEDA PARA ZOOM</span>
+                    <div class="legend">
+                        <span class="legend-item"><span class="dot sensor"></span> Sensor (0,0,0)</span>
+                        <span class="legend-item"><span class="dot obstacle"></span> Eco Físico</span>
+                        <span class="legend-item"><span class="dot wall"></span> Fondo / Pared</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel lateral con perfil de respuesta al impulso (RIR) -->
+            <aside class="side-panel">
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <h3>ENVOLVENTE ANALÍTICA DE ECO (RIR)</h3>
+                        <span id="peak-count" class="badge">0 Picos</span>
+                    </div>
+                    <div class="canvas-wrap">
+                        <canvas id="canvas-rir" width="380" height="180"></canvas>
+                    </div>
+                    <div class="axis-labels">
+                        <span>0 cm</span>
+                        <span>50 cm</span>
+                        <span>100 cm</span>
+                        <span>150 cm</span>
+                        <span>200 cm</span>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-header">
+                        <h3>REGISTRO DE ECOS DETECTADOS</h3>
+                        <span id="seq-counter" class="badge-sub">Seq #0</span>
+                    </div>
+                    <div id="echo-list" class="echo-log-list">
+                        <div class="echo-log-item empty">Esperando ecos acústicos...</div>
+                    </div>
+                </div>
+
+                <div class="panel-box mini-guide">
+                    <h4>💡 ¿Cómo verificarlo en vivo?</h4>
+                    <p>Coloca tu mano a unos <strong>30-40 cm</strong> del micrófono de tu computadora. Verás aparecer instantáneamente los puntos 3D y el pico en la gráfica.</p>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
