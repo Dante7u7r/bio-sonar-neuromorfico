@@ -3,108 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio-Sonar 3D | Ecolocalización Acústica en Tiempo Real</title>
+    <title>Bio-Sonar | Bloodhound Tactical Scanner 3D</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Three.js y OrbitControls desde CDN confiable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
+    <div class="hud-overlay-grid"></div>
+    <div class="scanline"></div>
+
     <div class="app-container">
-        <!-- Header superior con métricas clave -->
-        <header class="app-header">
-            <div class="brand">
-                <div class="status-indicator live"></div>
-                <div class="brand-text">
-                    <h1>BIO-SONAR 3D</h1>
-                    <span class="sub-badge">ECOLOCALIZACIÓN ACÚSTICA ACTIVA (8 - 18 kHz)</span>
+        <!-- Header Táctico Estilo Bloodhound / Apex -->
+        <header class="tactical-header">
+            <div class="brand-zone">
+                <div class="tactical-scanner-ring">
+                    <div class="scanner-dot"></div>
+                </div>
+                <div class="brand-titles">
+                    <div class="allfather-tag">EYE OF THE ALLFATHER // BIO-SONAR ACTIVE</div>
+                    <h1 class="brand-title">ESCÁNER TÁCTICO 3D</h1>
                 </div>
             </div>
 
-            <div class="header-metrics">
-                <div class="metric-card primary">
-                    <span class="metric-label">DISTANCIA ECO PRINCIPAL</span>
-                    <div class="metric-value-wrap">
-                        <span id="val-distance" class="metric-val">--.-</span>
-                        <span class="metric-unit">cm</span>
+            <div class="tactical-metrics">
+                <div class="tac-box primary-target">
+                    <div class="tac-corner tl"></div><div class="tac-corner tr"></div>
+                    <div class="tac-corner bl"></div><div class="tac-corner br"></div>
+                    <span class="tac-label">OBJETIVO EN RANGO</span>
+                    <div class="tac-value-row">
+                        <span id="val-distance" class="tac-num">--.-</span>
+                        <span class="tac-unit">CM</span>
                     </div>
+                    <span id="target-status" class="target-substatus">BUSCANDO SILUETA...</span>
                 </div>
 
-                <div class="metric-card">
-                    <span class="metric-label">VELOCIDAD DOPPLER</span>
-                    <div class="metric-value-wrap">
-                        <span id="val-velocity" class="metric-val">0.00</span>
-                        <span class="metric-unit">m/s</span>
+                <div class="tac-box">
+                    <div class="tac-corner tl"></div><div class="tac-corner tr"></div>
+                    <div class="tac-corner bl"></div><div class="tac-corner br"></div>
+                    <span class="tac-label">VELOCIDAD DOPPLER</span>
+                    <div class="tac-value-row">
+                        <span id="val-velocity" class="tac-num">0.00</span>
+                        <span class="tac-unit">M/S</span>
                     </div>
+                    <span class="target-substatus">CINEMÁTICA</span>
                 </div>
 
-                <div class="metric-card">
-                    <span class="metric-label">RELACIÓN SNR</span>
-                    <div class="metric-value-wrap">
-                        <span id="val-snr" class="metric-val">--.-</span>
-                        <span class="metric-unit">dB</span>
+                <div class="tac-box">
+                    <div class="tac-corner tl"></div><div class="tac-corner tr"></div>
+                    <div class="tac-corner bl"></div><div class="tac-corner br"></div>
+                    <span class="tac-label">RELACIÓN SNR</span>
+                    <div class="tac-value-row">
+                        <span id="val-snr" class="tac-num">--.-</span>
+                        <span class="tac-unit">DB</span>
                     </div>
+                    <span class="target-substatus">CALIDAD DE ECO</span>
                 </div>
 
-                <div class="metric-card">
-                    <span class="metric-label">TASA DE PULSO</span>
-                    <div class="metric-value-wrap">
-                        <span id="val-fps" class="metric-val">0</span>
-                        <span class="metric-unit">Hz</span>
+                <div class="tac-box">
+                    <div class="tac-corner tl"></div><div class="tac-corner tr"></div>
+                    <div class="tac-corner bl"></div><div class="tac-corner br"></div>
+                    <span class="tac-label">FRECUENCIA MUESTREO</span>
+                    <div class="tac-value-row">
+                        <span class="tac-num">48.0</span>
+                        <span class="tac-unit">KHZ</span>
                     </div>
+                    <span class="target-substatus">PULSOS 8-18 kHz</span>
                 </div>
             </div>
         </header>
 
-        <!-- Área principal de trabajo -->
+        <!-- Viewport 3D Principal -->
         <main class="main-viewport">
-            <!-- Canvas 3D de Three.js -->
             <div id="canvas-3d-container" class="viewport-3d">
-                <div class="overlay-controls">
-                    <span class="hud-tag">🎯 VISTA 3D INTERACTIVA • ARRASTRA PARA ROTAR • RUEDA PARA ZOOM</span>
-                    <div class="legend">
-                        <span class="legend-item"><span class="dot sensor"></span> Sensor (0,0,0)</span>
-                        <span class="legend-item"><span class="dot obstacle"></span> Eco Físico</span>
-                        <span class="legend-item"><span class="dot wall"></span> Fondo / Pared</span>
-                    </div>
+                <div class="tactical-hud-crosshairs">
+                    <div class="crosshair-center"></div>
+                    <div class="crosshair-bracket left"></div>
+                    <div class="crosshair-bracket right"></div>
+                    <div class="scan-mode-indicator">MODO ESCANEO DE RECONOCIMIENTO VOLUMÉTRICO</div>
+                </div>
+
+                <div class="radar-legend-bar">
+                    <span class="legend-chip"><span class="legend-color sensor"></span> ORIGEN DE EMISIÓN (0,0,0)</span>
+                    <span class="legend-chip"><span class="legend-color hand"></span> SILUETA HOLOGRÁFICA (MANO / CUERPO)</span>
+                    <span class="legend-chip"><span class="legend-color wall"></span> ESTRUCTURA / PARED DE SALA</span>
                 </div>
             </div>
 
-            <!-- Panel lateral con perfil de respuesta al impulso (RIR) -->
-            <aside class="side-panel">
-                <div class="panel-box">
-                    <div class="panel-header">
-                        <h3>ENVOLVENTE ANALÍTICA DE ECO (RIR)</h3>
-                        <span id="peak-count" class="badge">0 Picos</span>
+            <!-- Panel de Inteligencia Táctica Lateral -->
+            <aside class="tactical-side-panel">
+                <div class="tac-card">
+                    <div class="tac-card-header">
+                        <span class="tac-card-title">FIRMA DE IMPULSO ACÚSTICO (RIR)</span>
+                        <span id="peak-count" class="tac-badge">0 ECOS</span>
                     </div>
-                    <div class="canvas-wrap">
-                        <canvas id="canvas-rir" width="380" height="180"></canvas>
+                    <div class="canvas-container">
+                        <canvas id="canvas-rir" width="340" height="150"></canvas>
                     </div>
-                    <div class="axis-labels">
-                        <span>0 cm</span>
-                        <span>50 cm</span>
-                        <span>100 cm</span>
-                        <span>150 cm</span>
-                        <span>200 cm</span>
-                    </div>
-                </div>
-
-                <div class="panel-box">
-                    <div class="panel-header">
-                        <h3>REGISTRO DE ECOS DETECTADOS</h3>
-                        <span id="seq-counter" class="badge-sub">Seq #0</span>
-                    </div>
-                    <div id="echo-list" class="echo-log-list">
-                        <div class="echo-log-item empty">Esperando ecos acústicos...</div>
+                    <div class="axis-scale">
+                        <span>0m</span>
+                        <span>0.5m</span>
+                        <span>1.0m</span>
+                        <span>1.5m</span>
+                        <span>2.0m</span>
                     </div>
                 </div>
 
-                <div class="panel-box mini-guide">
-                    <h4>💡 ¿Cómo verificarlo en vivo?</h4>
-                    <p>Coloca tu mano a unos <strong>30-40 cm</strong> del micrófono de tu computadora. Verás aparecer instantáneamente los puntos 3D y el pico en la gráfica.</p>
+                <div class="tac-card">
+                    <div class="tac-card-header">
+                        <span class="tac-card-title">SILUETAS Y OBJETOS RECONOCIDOS</span>
+                        <span id="seq-counter" class="tac-badge-sub">SCAN #0</span>
+                    </div>
+                    <div id="echo-list" class="detected-targets-list">
+                        <div class="target-row empty">Emitiendo pulsos de ecolocalización...</div>
+                    </div>
+                </div>
+
+                <div class="tac-card instruction-box">
+                    <div class="instruct-header">
+                        <span class="instruct-icon">◈</span>
+                        <span>CONTROL TÁCTICO</span>
+                    </div>
+                    <p>Mueve tu mano o cuerpo frente al micrófono. La onda de escaneo <strong>revelará la silueta 3D</strong> y fijará el marcador sobre el objeto en tiempo real.</p>
                 </div>
             </aside>
         </main>
