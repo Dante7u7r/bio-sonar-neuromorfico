@@ -1,5 +1,4 @@
 #include "cerebro.hpp"
-#include "server.hpp"
 #include "synthetic_signal_adapter.hpp"
 #include <cmath>
 #include <random>
@@ -1465,9 +1464,6 @@ void BrainUnico::step() {
 
     // Actualizar dinámica fisiológica y biomédica
     update_vital_signs(BATCH_MS * 0.001);
-
-    // Construir JSON y empujar al Servidor Web
-    update_json_data(get_state_json());
 }
 
 void BrainUnico::update_vital_signs(double dt_sec) {

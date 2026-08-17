@@ -1,5 +1,4 @@
 #include "cerebro.hpp"
-#include "server.hpp"
 #include "sensor_adapter.hpp"
 #include "synthetic_signal_adapter.hpp"
 #include "audio_sonar_adapter.hpp"
@@ -11,39 +10,28 @@
 #include <fstream>
 #include <cstdlib>
 #include <iomanip>
+#include <algorithm>
 
 std::atomic<bool> sim_running(true);
-std::atomic<bool> exit_requested(false);
 
 void signal_handler(int signum) {
     if (signum == SIGINT) {
-        if (sim_running) {
-            std::cout << "\n[WARN] Interrupcion detectada. Deteniendo bucle del Bio-Sonar...\n";
-            sim_running = false;
-        } else {
-            std::cout << "\n[WARN] Interrupcion detectada de nuevo. Apagando servidor HTTP...\n";
-            exit_requested = true;
-        }
+        std::cout << "\n[WARN] Interrupcion detectada. Deteniendo Bio-Sonar...\n";
+        sim_running = false;
     }
 }
 
 int main(int argc, char* argv[]) {
     std::signal(SIGINT, signal_handler);
 
-    int http_port = 8000;
     int max_steps = -1;
-    bool disable_server = false;
     bool use_audio_sonar = true;
     int sonar_port = 9099;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg == "--port" && i + 1 < argc) {
-            http_port = std::atoi(argv[++i]);
-        } else if (arg == "--steps" && i + 1 < argc) {
+        if (arg == "--steps" && i + 1 < argc) {
             max_steps = std::atoi(argv[++i]);
-        } else if (arg == "--no-server") {
-            disable_server = true;
         } else if (arg == "--sonar" || arg == "--audio") {
             use_audio_sonar = true;
             if (i + 1 < argc && argv[i+1][0] != '-') {
@@ -55,11 +43,11 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "========================================================================\n";
-    std::cout << "  🦇 SISTEMA DE BIO-SONAR NEUROMORFICO ACUSTICO EN TIEMPO REAL (C++17)\n";
-    std::cout << "  Ecolocalizacion y Mapeo Espacial 3D Bio-Inspirado (SNN + Physarum)\n";
-    std::cout << "  Adaptador: " << (use_audio_sonar ? ("AUDIO BIO-SONAR UDP:" + std::to_string(sonar_port)) : "GENERADOR SINTETICO BENCHMARK") << "\n";
-    std::cout << "  Topologia: Sensorial: " << N_SENSORY << ", Oculta: " << N_HIDDEN 
-              << ", Motor: " << N_MOTOR << ", PFC: " << N_PFC << " (Total: " << N_TOTAL << " LIF Neurons)\n";
+    std::cout << "  🦇 MOTOR NEUROMORFICO BIO-SONAR ACUSTICO EN TIEMPO REAL (C++17)\n";
+    std::cout << "  Ecolocalizacion y Mapeo Espacial Bio-Inspirado (SNN + Physarum)\n";
+    std::cout << "  Modo: " << (use_audio_sonar ? ("AUDIO BIO-SONAR UDP:" + std::to_string(sonar_port)) : "GENERADOR SINTETICO BENCHMARK") << "\n";
+    std::cout << "  Red SNN: " << N_SENSORY << " Sensoriales (0-2.5m) | " << N_HIDDEN << " Ocultas | " 
+              << N_MOTOR << " Motoras | " << N_PFC << " PFC (Total: " << N_TOTAL << " LIF Neurons)\n";
     std::cout << "========================================================================\n";
 
     // Crear carpeta logs si no existe
@@ -73,13 +61,17 @@ int main(int argc, char* argv[]) {
 
     // 1. Instanciar el adaptador sensorial (Bio-Sonar o Sintético)
     std::unique_ptr<ISensorAdapter> sensor_adapter;
+    AudioSonarAdapter* sonar_raw_ptr = nullptr;
+
     if (use_audio_sonar) {
         auto sonar = std::make_unique<AudioSonarAdapter>(sonar_port);
+        sonar_raw_ptr = sonar.get();
         if (sonar->connect()) {
-            std::cout << "[OK] Adaptador Bio-Sonar Acustico escuchando en puerto " << sonar_port << ".\n";
+            std::cout << "[OK] Adaptador Bio-Sonar Acustico escuchando en 127.0.0.1:" << sonar_port << "\n";
             sensor_adapter = std::move(sonar);
         } else {
             std::cerr << "[WARN] Fallo enlace Bio-Sonar. Cambiando a generador sintetico...\n";
+            sonar_raw_ptr = nullptr;
             auto syn = std::make_unique<SyntheticSignalAdapter>(10, 30.0);
             syn->connect();
             sensor_adapter = std::move(syn);
@@ -90,7 +82,7 @@ int main(int argc, char* argv[]) {
         sensor_adapter = std::move(syn);
     }
 
-    // 2. Inicializar el nucleo cerebral
+    // 2. Inicializar el nucleo cerebral con el adaptador de sensores
     auto cerebro = std::make_unique<BrainUnico>(std::move(sensor_adapter));
 
     // Cargar estado previo si existe
@@ -102,31 +94,42 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // 3. Iniciar servidor HTTP para visualizador Web
-    if (!disable_server) {
-        start_server(http_port);
-        std::cout << "[OK] Visualizador Web activo en: http://localhost:" << http_port << "/demo.html\n";
-    }
-
-    std::cout << "\n[*] Bucle principal del Bio-Sonar en marcha. Presiona Ctrl+C para salir.\n\n";
+    std::cout << "\n[*] Bucle del Bio-Sonar activo. Presiona Ctrl+C para salir.\n";
+    std::cout << "----------------------------------------------------------------------------------------------------\n";
+    std::cout << " Tiempo  | Estado SNN | Distancia Eco | Radar Acustico (0cm -> 200cm)           | Spikes | Dopamina\n";
+    std::cout << "----------------------------------------------------------------------------------------------------\n";
 
     int step_counter = 0;
     while (sim_running) {
         cerebro->step();
         step_counter++;
 
-        if (step_counter % 20 == 0) {
+        if (step_counter % 10 == 0) {
             double t_sec = cerebro->time_ms / 1000.0;
-            std::string src = cerebro->sensor_adapter ? cerebro->sensor_adapter->get_source_name() : "NONE";
-            std::string label = cerebro->sensor_adapter ? cerebro->current_sensory_frame.status_label : "N/A";
+            double dist_cm = 0.0;
+            if (sonar_raw_ptr) {
+                dist_cm = sonar_raw_ptr->get_detected_distance_cm();
+            }
+
+            // Barra visual de radar en consola (0 cm a 200 cm)
+            int bar_len = 30;
+            int bar_pos = (dist_cm > 0.0) ? std::min(bar_len - 1, static_cast<int>((dist_cm / 200.0) * bar_len)) : -1;
             
-            std::cout << "[Paso " << step_counter << "] t=" << std::fixed << std::setprecision(1) << t_sec << "s"
-                      << " | " << cerebro->brain_state
-                      << " | Fuente: " << src
-                      << " | " << label
-                      << " | Spikes: " << cerebro->spikes_in_current_batch
-                      << " | DA: " << std::setprecision(2) << cerebro->neuromod.dopamine
-                      << " | Aforo: " << cerebro->fungal_quorum.get_estimated_occupants()
+            std::string radar_bar = "[";
+            for (int b = 0; b < bar_len; ++b) {
+                if (b == bar_pos) radar_bar += "*";
+                else radar_bar += "-";
+            }
+            radar_bar += "]";
+
+            std::string dist_str = (dist_cm > 0.0) ? (std::to_string(static_cast<int>(dist_cm)) + " cm") : "Buscando...";
+
+            std::cout << " " << std::setw(6) << std::fixed << std::setprecision(1) << t_sec << "s"
+                      << " | " << std::setw(10) << cerebro->brain_state
+                      << " | " << std::setw(13) << dist_str
+                      << " | " << std::setw(40) << std::left << radar_bar << std::right
+                      << " | " << std::setw(6) << cerebro->spikes_in_current_batch
+                      << " | " << std::setw(8) << std::setprecision(2) << cerebro->neuromod.dopamine
                       << "\n";
         }
 
@@ -140,12 +143,6 @@ int main(int argc, char* argv[]) {
     std::cout << "\n[*] Guardando estado del Bio-Sonar...\n";
     cerebro->save_state(state_path);
     std::cout << "[OK] Estado guardado en " << state_path << "\n";
-
-    if (!disable_server) {
-        std::cout << "[*] Esperando a que el servidor HTTP concluya...\n";
-        stop_server();
-    }
-
     std::cout << "[+] Bio-Sonar finalizado ordenadamente.\n";
     return 0;
 }

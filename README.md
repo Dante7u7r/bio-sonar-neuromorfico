@@ -1,4 +1,4 @@
-# 🦇 Bio-Sonar Neuromórfico: Ecolocalización y Mapeo Espacial 3D en Tiempo Real (C++17 / Python)
+# 🦇 Bio-Sonar Neuromórfico: Ecolocalización Acústica en Tiempo Real (C++17 / Python)
 
 [![C++17](https://img.shields.io/badge/Language-C%2B%2B17-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B17)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)]()
@@ -6,7 +6,7 @@
 [![Zero GPU](https://img.shields.io/badge/Hardware-CPU%20Only%20%28Zero%20GPU%29-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
 
-Un sistema biomimético de **ecolocalización activa y reconstrucción espacial 3D en tiempo real**, inspirado en la fisiología auditiva de los murciélagos (*Chiroptera*) y potenciado por un motor bio-computacional multirreino (**SNN + Physarum + Micelio**).
+Un sistema biomimético de **ecolocalización activa y procesamiento espacial en tiempo real**, inspirado en la fisiología auditiva de los murciélagos (*Chiroptera*) y potenciado por un motor bio-computacional multirreino (**SNN + Physarum + Micelio**).
 
 Utiliza los **altavoces y micrófonos estándar** de cualquier computadora o microcontrolador para emitir micro-pulsos de frecuencia modulada (chirps inaudibles de $8\text{ kHz} - 18\text{ kHz}$) y procesar los ecos de retorno mediante **líneas de retardo axonal y plasticidad sináptica STDP**, logrando detección milimétrica de obstáculos sin cámaras, sin LiDAR y sin GPU.
 
@@ -36,9 +36,7 @@ Utiliza los **altavoces y micrófonos estándar** de cualquier computadora o mic
                                     • 274 Neuronas LIF Multicompartimentales
                                     • Cerebelo (Cancelación de Auto-Vocalización)
                                     • Physarum (Enrutamiento Libre de Obstáculos)
-                                                       │
-                                                       ▼
-                                    [ 🌐 Visualizador Web 3D (Three.js) ]
+                                    • Radar de Navegación en Consola
 ```
 
 ---
@@ -101,16 +99,6 @@ python bio_sonar_backend.py
 
 ---
 
-## 🌐 Visualizador 3D en el Navegador
-
-1. Abre tu navegador web en: **`http://localhost:8000/demo.html`**
-2. Observa:
-   * **Gemelo Digital 3D de la Red**: Neuronas disparando en tiempo real ante la presencia de objetos.
-   * **Distancia en Centímetros**: Medición continua de la distancia a paredes o manos.
-   * **Malla de Physarum**: Optimización biológica del camino libre de navegación.
-
----
-
 ## 📁 Estructura del Repositorio
 
 ```
@@ -128,12 +116,9 @@ bio-sonar-neuromorfico/
 ├── basal_ganglia.hpp              # Vías de decisión motora Go/No-Go
 ├── mycelium_substrate.hpp         # Sustrato memristivo fúngico anti-drift
 ├── bio_hybrid_plant_fungi.hpp     # Modelos electrofisiológicos vegetales
-├── server.hpp                     # Servidor HTTP embebido en sockets nativos
-├── server.cpp
-├── main.cpp                       # Punto de entrada principal
+├── main.cpp                       # Punto de entrada principal con Radar en Consola
 ├── build.ps1                      # Script de compilación para Windows
-├── CMakeLists.txt                 # Archivo de construcción multiplataforma
-└── web_visualizer/                # Visualizador interactivo 3D (HTML5/CSS3/Three.js)
+└── CMakeLists.txt                 # Archivo de construcción multiplataforma
 ```
 
 ---

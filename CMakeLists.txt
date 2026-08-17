@@ -13,7 +13,6 @@ endif()
 set(SOURCE_FILES
     main.cpp
     cerebro.cpp
-    server.cpp
     synthetic_signal_adapter.cpp
     audio_sonar_adapter.cpp
 )

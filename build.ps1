@@ -1,10 +1,6 @@
 # ==============================================================================
 # SCRIPT DE COMPILACION: BIO-SONAR NEUROMORFICO (C++17 / MSVC)
 # ==============================================================================
-param (
-    [switch]$NoServer
-)
-
 $ErrorActionPreference = "Stop"
 
 Write-Host "======================================================================" -ForegroundColor Cyan
@@ -31,18 +27,9 @@ if ($null -eq $vcvarsall) {
 
 Write-Host "[+] Compilador localizado en: $vcvarsall" -ForegroundColor Green
 
-# 2. Configurar directivas
-$defines = ""
-if ($NoServer) {
-    Write-Host "[!] Compilando sin servidor (-NoServer)..." -ForegroundColor Yellow
-    $defines = "/DNO_SERVER"
-} else {
-    Write-Host "[+] Compilando con servidor HTTP activo..." -ForegroundColor Green
-}
-
-# 3. Compilacion
-$source_files = "main.cpp cerebro.cpp server.cpp synthetic_signal_adapter.cpp audio_sonar_adapter.cpp"
-$compiler_cmd = "cl /EHsc /O2 /std:c++17 $source_files $defines /link ws2_32.lib /out:bio_sonar.exe"
+# 2. Compilacion limpia
+$source_files = "main.cpp cerebro.cpp synthetic_signal_adapter.cpp audio_sonar_adapter.cpp"
+$compiler_cmd = "cl /EHsc /O2 /std:c++17 $source_files /link ws2_32.lib /out:bio_sonar.exe"
 
 Write-Host "[*] Compilando con MSVC..." -ForegroundColor Cyan
 $cmd_args = "call `"$vcvarsall`" x64 && $compiler_cmd"
