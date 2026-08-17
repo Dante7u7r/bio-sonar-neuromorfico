@@ -127,10 +127,10 @@ int main(int argc, char* argv[]) {
             std::cout << " " << std::setw(6) << std::fixed << std::setprecision(1) << t_sec << "s"
                       << " | " << std::setw(10) << cerebro->brain_state
                       << " | " << std::setw(13) << dist_str
-                      << " | " << std::setw(40) << std::left << radar_bar << std::right
+                      << " | " << std::setw(34) << std::left << radar_bar << std::right
                       << " | " << std::setw(6) << cerebro->spikes_in_current_batch
                       << " | " << std::setw(8) << std::setprecision(2) << cerebro->neuromod.dopamine
-                      << "\n";
+                      << std::endl;
         }
 
         if (max_steps > 0 && step_counter >= max_steps) {
