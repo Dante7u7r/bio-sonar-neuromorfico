@@ -103,11 +103,13 @@ python bio_sonar_backend.py
 
 ```
 bio-sonar-neuromorfico/
+├── PROYECTO_BATDRIVE.md           # Dossier técnico y comercial para Evaluación de Proyectos
 ├── audio_sonar_adapter.hpp        # Adaptador C++ para ingesta de paquetes UDP Bio-Sonar
 ├── audio_sonar_adapter.cpp
 ├── bio_sonar_backend.py           # Backend de audio en tiempo real (Matched Filter @ 48 kHz)
 ├── test_bio_sonar.py              # Script interactivo de prueba en terminal
 ├── plot_bio_sonar.py              # Generador de gráficas de respuesta al impulso acústico (RIR)
+├── visor_sonar_3d.py              # Visualizador 3D de campo acústico y rutas
 ├── sensor_adapter.hpp             # Interfaz abstracta universal ISensorAdapter
 ├── cerebro.hpp                    # Núcleo SNN 274 Neuronas LIF + Plasticidad STDP
 ├── cerebro.cpp
@@ -123,6 +125,14 @@ bio-sonar-neuromorfico/
 
 ---
 
+## 📄 Documentación del Proyecto Académico y Comercial
+
+Para consultar el estudio de mercado, fundamentación física acústica vs RF, comparativa con *Robat* (Tel Aviv University, 2018) y modelo de negocio para la materia de **Evaluación de Proyectos**, consulta:
+👉 **[`PROYECTO_BATDRIVE.md`](PROYECTO_BATDRIVE.md)**
+
+---
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Libre para fines educativos, de investigación y desarrollo comercial.
+
